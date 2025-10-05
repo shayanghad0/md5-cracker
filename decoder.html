@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MD5 Hash Generator with Decoder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode {
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .dark-mode .container {
+      background: #1e1e1e;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    textarea, select, input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .output {
+      word-break: break-all;
+      background: #eee;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+    }
+
+    .dark-mode .output {
+      background: #333;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MD5 Hash Tool with Decoder</h1>
+
+    <label for="inputText">Input Text</label>
+    <textarea id="inputText" rows="4" placeholder="Enter text..."></textarea>
+
+    <div class="row">
+      <div>
+        <label for="inputEncoding">Input Encoding</label>
+        <select id="inputEncoding">
+          <option value="utf8">UTF-8</option>
+          <option value="hex">Hex</option>
+          <option value="base64">Base64</option>
+        </select>
+      </div>
+      <div>
+        <label for="outputFormat">Output Format</label>
+        <select id="outputFormat">
+          <option value="hex">Hex</option>
+          <option value="base64">Base64</option>
+        </select>
+      </div>
+    </div>
+
+    <label><input type="checkbox" id="useHmac" /> Use HMAC</label>
+    <input type="text" id="hmacKey" placeholder="Enter HMAC key (if enabled)" />
+
+    <label for="fileInput">Or select a file:</label>
+    <input type="file" id="fileInput" />
+
+    <div class="buttons">
+      <button onclick="generateHash()">Generate</button>
+      <button onclick="copyHash()">Copy</button>
+      <button onclick="clearAll()">Clear</button>
+      <button onclick="toggleAutoUpdate()">Auto Update: <span id="autoStatus">OFF</span></button>
+      <button onclick="toggleDarkMode()">Dark Mode</button>
+      <button onclick="decodeInput()">Decode Input</button>
+    </div>
+
+    <div class="output" id="outputHash">Hash output will appear here...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+  <script>
+    let autoUpdate = false;
+
+    const input = document.getElementById("inputText");
+    const output = document.getElementById("outputHash");
+    const hmacKeyInput = document.getElementById("hmacKey");
+
+    function getHash() {
+      const text = input.value;
+      const encoding = document.getElementById("inputEncoding").value;
+      const format = document.getElementById("outputFormat").value;
+      const useHmac = document.getElementById("useHmac").checked;
+      const key = hmacKeyInput.value;
+
+      let data;
+
+      try {
+        if (encoding === "hex") {
+          data = CryptoJS.enc.Hex.parse(text);
+        } else if (encoding === "base64") {
+          data = CryptoJS.enc.Base64.parse(text);
+        } else {
+          data = CryptoJS.enc.Utf8.parse(text);
+        }
+      } catch (err) {
+        output.textContent = "Invalid input or encoding.";
+        return;
+      }
+
+      let result;
+      if (useHmac && key) {
+        const keyEnc = CryptoJS.enc.Utf8.parse(key);
+        result = CryptoJS.HmacMD5(data, keyEnc);
+      } else {
+        result = CryptoJS.MD5(data);
+      }
+
+      if (format === "base64") {
+        output.textContent = result.toString(CryptoJS.enc.Base64);
+      } else {
+        output.textContent = result.toString(CryptoJS.enc.Hex);
+      }
+    }
+
+    function generateHash() {
+      getHash();
+    }
+
+    function copyHash() {
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        alert("Hash copied!");
+      });
+    }
+
+    function clearAll() {
+      input.value = "";
+      output.textContent = "Hash output will appear here...";
+    }
+
+    function toggleAutoUpdate() {
+      autoUpdate = !autoUpdate;
+      document.getElementById("autoStatus").textContent = autoUpdate ? "ON" : "OFF";
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    input.addEventListener("input", () => {
+      if (autoUpdate) getHash();
+    });
+
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        const wordArray = CryptoJS.lib.WordArray.create(reader.result);
+        const hash = CryptoJS.MD5(wordArray).toString();
+        output.textContent = hash;
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    // 🔽 NEW FUNCTION: Decode Hex/Base64 to UTF-8 text
+    function decodeInput() {
+      const text = input.value.trim();
+      const encoding = document.getElementById("inputEncoding").value;
+
+      let decoded = "";
+
+      try {
+        if (encoding === "hex") {
+          const words = CryptoJS.enc.Hex.parse(text);
+          decoded = words.toString(CryptoJS.enc.Utf8);
+        } else if (encoding === "base64") {
+          const words = CryptoJS.enc.Base64.parse(text);
+          decoded = words.toString(CryptoJS.enc.Utf8);
+        } else {
+          decoded = text; // UTF-8 assumed readable
+        }
+      } catch (e) {
+        decoded = "Invalid input or encoding.";
+      }
+
+      alert("Decoded Text:\n" + decoded);
+    }
+  </script>
+</body>
+</html>
