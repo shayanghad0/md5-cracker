@@ -1,256 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MD5 Hash Generator</title>
-<style>
-    /* Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-
+  <meta charset="UTF-8" />
+  <title>MD5 Hash Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
     body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f4f6f8;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        min-height: 100vh;
-        padding-top: 50px;
-        color: #333;
+      font-family: sans-serif;
+      background: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode {
+      background: #121212;
+      color: #e0e0e0;
     }
 
     .container {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        padding: 30px;
-        width: 90%;
-        max-width: 500px;
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .dark-mode .container {
+      background: #1e1e1e;
     }
 
     h1 {
-        margin-top: 0;
-        font-size: 1.8em;
-        text-align: center;
-        color: #1a73e8;
+      text-align: center;
+      margin-bottom: 1rem;
     }
 
-    label {
-        display: block;
-        margin: 15px 0 5px;
-        font-weight: 600;
+    textarea, select, input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
 
-    input[type="text"], textarea {
-        width: 100%;
-        padding: 12px 15px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        font-size: 1em;
-        box-sizing: border-box;
+    .row {
+      display: flex;
+      gap: 1rem;
     }
 
-    textarea {
-        resize: none;
-        height: 100px;
+    .row > div {
+      flex: 1;
     }
 
-    .settings {
-        margin: 20px 0;
-        background: #f0f4f8;
-        padding: 15px;
-        border-radius: 10px;
-    }
-
-    .settings label {
-        font-weight: 500;
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
     }
 
     button {
-        display: inline-block;
-        padding: 12px 20px;
-        background-color: #1a73e8;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        font-size: 1em;
-        cursor: pointer;
-        margin-top: 15px;
-        transition: background 0.3s;
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 4px;
     }
 
     button:hover {
-        background-color: #1669c1;
-    }
-
-    .output-container {
-        margin-top: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+      background: #0056b3;
     }
 
     .output {
-        flex-grow: 1;
-        padding: 12px 15px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        background: #f9f9f9;
-        font-family: monospace;
-        word-break: break-all;
+      word-break: break-all;
+      background: #eee;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-top: 1rem;
     }
 
-    .copy-btn {
-        background-color: #4caf50;
+    .dark-mode .output {
+      background: #333;
     }
 
-    .copy-btn:hover {
-        background-color: #3e8e41;
+    label {
+      font-weight: bold;
     }
-</style>
+
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>MD5 Hash Tool</h1>
 
-<div class="container">
-    <h1>MD5 Hash Generator</h1>
+    <label for="inputText">Input Text</label>
+    <textarea id="inputText" rows="4" placeholder="Enter text..."></textarea>
 
-    <label for="original">Original Text</label>
-    <textarea id="original" placeholder="Enter your text here..."></textarea>
-
-    <div class="settings">
-        <label>Input Encoding:</label>
-        <p>UTF-8 (default)</p>
-
-        <label>Output Format:</label>
-        <p>Hexadecimal</p>
-
-        <label>HMAC:</label>
-        <p>Disabled</p>
+    <div class="row">
+      <div>
+        <label for="inputEncoding">Input Encoding</label>
+        <select id="inputEncoding">
+          <option value="utf8">UTF-8</option>
+          <option value="hex">Hex</option>
+          <option value="base64">Base64</option>
+        </select>
+      </div>
+      <div>
+        <label for="outputFormat">Output Format</label>
+        <select id="outputFormat">
+          <option value="hex">Hex</option>
+          <option value="base64">Base64</option>
+        </select>
+      </div>
     </div>
 
-    <button id="generateBtn">Generate MD5</button>
+    <label><input type="checkbox" id="useHmac" /> Use HMAC</label>
+    <input type="text" id="hmacKey" placeholder="Enter HMAC key (if enabled)" />
 
-    <div class="output-container">
-        <div class="output" id="hashOutput">Your hash will appear here</div>
-        <button class="copy-btn" id="copyBtn">Copy</button>
+    <label for="fileInput">Or select a file:</label>
+    <input type="file" id="fileInput" />
+
+    <div class="buttons">
+      <button onclick="generateHash()">Generate</button>
+      <button onclick="copyHash()">Copy</button>
+      <button onclick="clearAll()">Clear</button>
+      <button onclick="toggleAutoUpdate()">Auto Update: <span id="autoStatus">OFF</span></button>
+      <button onclick="toggleDarkMode()">Dark Mode</button>
     </div>
-</div>
 
-<script>
-    // MD5 implementation in JS (without external libs)
-    function md5cycle(x, k) {
-        var a = x[0], b = x[1], c = x[2], d = x[3];
+    <div class="output" id="outputHash">Hash output will appear here...</div>
+  </div>
 
-        a = ff(a, b, c, d, k[0], 7, -680876936);
-        d = ff(d, a, b, c, k[1], 12, -389564586);
-        c = ff(c, d, a, b, k[2], 17,  606105819);
-        b = ff(b, c, d, a, k[3], 22, -1044525330);
-        a = ff(a, b, c, d, k[4], 7, -176418897);
-        d = ff(d, a, b, c, k[5], 12, 1200080426);
-        c = ff(c, d, a, b, k[6], 17, -1473231341);
-        b = ff(b, c, d, a, k[7], 22, -45705983);
-        a = ff(a, b, c, d, k[8], 7, 1770035416);
-        d = ff(d, a, b, c, k[9], 12, -1958414417);
-        c = ff(c, d, a, b, k[10], 17, -42063);
-        b = ff(b, c, d, a, k[11], 22, -1990404162);
-        a = ff(a, b, c, d, k[12], 7, 1804603682);
-        d = ff(d, a, b, c, k[13], 12, -40341101);
-        c = ff(c, d, a, b, k[14], 17, -1502002290);
-        b = ff(b, c, d, a, k[15], 22, 1236535329);
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+  <script>
+    let autoUpdate = false;
 
-        a = gg(a, b, c, d, k[1], 5, -165796510);
-        d = gg(d, a, b, c, k[6], 9, -1069501632);
-        c = gg(c, d, a, b, k[11], 14, 643717713);
-        b = gg(b, c, d, a, k[0], 20, -373897302);
-        a = gg(a, b, c, d, k[5], 5, -701558691);
-        d = gg(d, a, b, c, k[10], 9, 38016083);
-        c = gg(c, d, a, b, k[15], 14, -660478335);
-        b = gg(b, c, d, a, k[4], 20, -405537848);
-        a = gg(a, b, c, d, k[9], 5, 568446438);
-        d = gg(d, a, b, c, k[14], 9, -1019803690);
-        c = gg(c, d, a, b, k[3], 14, -187363961);
-        b = gg(b, c, d, a, k[8], 20, 1163531501);
-        a = gg(a, b, c, d, k[13], 5, -1444681467);
-        d = gg(d, a, b, c, k[2], 9, -51403784);
-        c = gg(c, d, a, b, k[7], 14, 1735328473);
-        b = gg(b, c, d, a, k[12], 20, -1926607734);
+    const input = document.getElementById("inputText");
+    const output = document.getElementById("outputHash");
+    const hmacKeyInput = document.getElementById("hmacKey");
 
-        a = hh(a, b, c, d, k[5], 4, -378558);
-        d = hh(d, a, b, c, k[8], 11, -2022574463);
-        c = hh(c, d, a, b, k[11], 16, 1839030562);
-        b = hh(b, c, d, a, k[14], 23, -35309556);
-        a = hh(a, b, c, d, k[1], 4, -1530992060);
-        d = hh(d, a, b, c, k[4], 11, 1272893353);
-        c = hh(c, d, a, b, k[7], 16, -155497632);
-        b = hh(b, c, d, a, k[10], 23, -1094730640);
-        a = hh(a, b, c, d, k[13], 4, 681279174);
-        d = hh(d, a, b, c, k[0], 11, -358537222);
-        c = hh(c, d, a, b, k[3], 16, -722521979);
-        b = hh(b, c, d, a, k[6], 23, 76029189);
-        a = hh(a, b, c, d, k[9], 4, -640364487);
-        d = hh(d, a, b, c, k[12], 11, -421815835);
-        c = hh(c, d, a, b, k[15], 16, 530742520);
-        b = hh(b, c, d, a, k[2], 23, -995338651);
+    function getHash() {
+      const text = input.value;
+      const encoding = document.getElementById("inputEncoding").value;
+      const format = document.getElementById("outputFormat").value;
+      const useHmac = document.getElementById("useHmac").checked;
+      const key = hmacKeyInput.value;
 
-        a = ii(a, b, c, d, k[0], 6, -198630844);
-        d = ii(d, a, b, c, k[7], 10, 1126891415);
-        c = ii(c, d, a, b, k[14], 15, -1416354905);
-        b = ii(b, c, d, a, k[5], 21, -57434055);
-        a = ii(a, b, c, d, k[12], 6, 1700485571);
-        d = ii(d, a, b, c, k[3], 10, -1894986606);
-        c = ii(c, d, a, b, k[10], 15, -1051523);
-        b = ii(b, c, d, a, k[1], 21, -2054922799);
-        a = ii(a, b, c, d, k[8], 6, 1873313359);
-        d = ii(d, a, b, c, k[15], 10, -30611744);
-        c = ii(c, d, a, b, k[6], 15, -1560198380);
-        b = ii(b, c, d, a, k[13], 21, 1309151649);
-        a = ii(a, b, c, d, k[4], 6, -145523070);
-        d = ii(d, a, b, c, k[11], 10, -1120210379);
-        c = ii(c, d, a, b, k[2], 15, 718787259);
-        b = ii(b, c, d, a, k[9], 21, -343485551);
+      let data;
 
-        x[0] = add32(a, x[0]);
-        x[1] = add32(b, x[1]);
-        x[2] = add32(c, x[2]);
-        x[3] = add32(d, x[3]);
-    }
-
-    function cmn(q, a, b, x, s, t) {
-        a = add32(add32(a, q), add32(x, t));
-        return add32((a << s) | (a >>> (32 - s)), b);
-    }
-    function ff(a, b, c, d, x, s, t) { return cmn((b & c) | (~b & d), a, b, x, s, t); }
-    function gg(a, b, c, d, x, s, t) { return cmn((b & d) | (c & ~d), a, b, x, s, t); }
-    function hh(a, b, c, d, x, s, t) { return cmn(b ^ c ^ d, a, b, x, s, t); }
-    function ii(a, b, c, d, x, s, t) { return cmn(c ^ (b | ~d), a, b, x, s, t); }
-
-    function md51(s) {
-        var n = s.length,
-            state = [1732584193, -271733879, -1732584194, 271733878],
-            i;
-        var tail = [0,0,0,0];
-        for (i=64; i<=n; i+=64) {
-            md5cycle(state, md5blk(s.substring(i-64, i)));
+      try {
+        if (encoding === "hex") {
+          data = CryptoJS.enc.Hex.parse(text);
+        } else if (encoding === "base64") {
+          data = CryptoJS.enc.Base64.parse(text);
+        } else {
+          data = CryptoJS.enc.Utf8.parse(text);
         }
-        s = s.substring(i-64);
-        var len = s.length;
-        var i;
-        for(i=0;i<len;i++)
-            tail[i>>2] |= s.charCodeAt(i) << ((i%4) << 3);
-        tail[i>>2] |= 0x80 << ((i%4) << 3);
-        if(i > 55) {
-            md5cycle(state, tail);
-            for(var j=0;j<16;j++) tail[j] = 0;
-        }
-        tail[14] = n*8;
-        md5cycle(state, tail);
-        return state;
+      } catch (err) {
+        output.textContent = "Invalid input or encoding.";
+        return;
+      }
+
+      let result;
+      if (useHmac && key) {
+        const keyEnc = CryptoJS.enc.Utf8.parse(key);
+        result = CryptoJS.HmacMD5(data, keyEnc);
+      } else {
+        result = CryptoJS.MD5(data);
+      }
+
+      if (format === "base64") {
+        output.textContent = result.toString(CryptoJS.enc.Base64);
+      } else {
+        output.textContent = result.toString(CryptoJS.enc.Hex);
+      }
     }
 
-    function md5blk(s) {
-        var md5blks = [];
-        for (var i=0; i<64; i+=4) {
-            md5blks[i>>2] = s.charCodeAt(i)
-                +
+    function generateHash() {
+      getHash();
+    }
+
+    function copyHash() {
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        alert("Hash copied!");
+      });
+    }
+
+    function clearAll() {
+      input.value = "";
+      output.textContent = "Hash output will appear here...";
+    }
+
+    function toggleAutoUpdate() {
+      autoUpdate = !autoUpdate;
+      document.getElementById("autoStatus").textContent = autoUpdate ? "ON" : "OFF";
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    input.addEventListener("input", () => {
+      if (autoUpdate) getHash();
+    });
+
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        const wordArray = CryptoJS.lib.WordArray.create(reader.result);
+        const hash = CryptoJS.MD5(wordArray).toString();
+        output.textContent = hash;
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+</body>
+</html>
