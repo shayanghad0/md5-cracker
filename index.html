@@ -1,2 +1,66 @@
-realy??
-wait for update :?
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD5</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #0d0d0d;
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #00ffae;
+    letter-spacing: 1px;
+  }
+
+  .btn-container {
+    display: flex;
+    gap: 15px;
+  }
+
+  button {
+    background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+    border: 2px solid #00ffae;
+    color: #00ffae;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background: #00ffae;
+    color: #000;
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+  <h1>:MD5:</h1>
+  <div class="btn-container">
+    <button onclick="goTo('encoder')">Encoder v1</button>
+    <button onclick="goTo('encoder-2')">Encoder v2</button>
+    <button onclick="goTo('decoder')">Decoder</button>
+  </div>
+
+  <script>
+    const site = "{site}"; // Replace with your site, e.g. "https://example.com"
+    
+    function goTo(path) {
+      window.location.href = `${site}/${path}`;
+    }
+  </script>
+</body>
+</html>
